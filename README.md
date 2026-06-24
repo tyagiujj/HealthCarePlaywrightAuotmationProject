@@ -1,4 +1,4 @@
-# HealthCare MedFlow Playwright Automation Framework
+# HealthCare Playwright Automation Framework
 
 End-to-end UI automation framework for the HealthCare web application using Playwright, TypeScript, Page Object Model, Faker-based test data, and Allure reporting.
 
