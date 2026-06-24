@@ -22,7 +22,7 @@ test.afterEach(async ({ page }) => {
 test("Verify the Login As Patient",async({page})=>{
 
     //Enter valid credentials and log in
-    await loginPage.EnterEmailAddress(config. patientemail);
+    await loginPage.EnterEmailAddress(config.patientemail);
     await loginPage.EnterPassword(config.password);
     await loginPage.ClickLoginButton();
 })

@@ -5,7 +5,7 @@ export class TestConfig {
 
   doctoremail="enosqua_1@pdf-cutter.com";
   adminemail="admin@gmail.com";
-  adminpassword="admin@12345";
+  adminpassword="Admin@12345";
 
 
 }
