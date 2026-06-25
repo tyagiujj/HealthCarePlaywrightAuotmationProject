@@ -13,6 +13,8 @@ export class Patientsignup {
     public readonly confirmPasswordText: Locator;
     public readonly termsCheckbox: Locator;
     public readonly continueButton: Locator;
+    public readonly passworddoNotMatch :Locator;
+    public readonly emailRequired :Locator;
 
     constructor(page: Page) {
         this.page = page;
@@ -30,6 +32,12 @@ export class Patientsignup {
         this.passwordFieldText = page.getByRole('textbox', { name: 'Enter password' });
 
         this.confirmPasswordText = page.getByRole('textbox', { name: 'Enter same password' });
+
+        this.passworddoNotMatch=page.getByText('Passwords do not match', { exact: true });
+
+        this.emailRequired=page.getByText('Email is required', { exact: true });
+
+
 
         this.termsCheckbox = page.getByRole('checkbox', {
             name: /terms of service/i
@@ -69,6 +77,18 @@ export class Patientsignup {
     async clickContinue() {
         await this.continueButton.click();
     }
+     async Getcontinue(): Promise<Locator> {
+    return this.continueButton;
+  }
+  
+  async GetPasswordDoNotMatchMessage(): Promise<Locator>{
+    return this.passworddoNotMatch;
+  }
+  async GetEmailIsRequiredMessage():Promise<Locator>{
+    return this.emailRequired;
+  }
+  
+
 
     async registerPatient(firstName: string, lastName: string, email: string, password: string) {
         await this.enterFirstName(firstName);
