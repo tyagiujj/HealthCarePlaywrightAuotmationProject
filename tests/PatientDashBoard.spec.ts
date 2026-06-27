@@ -24,7 +24,7 @@ test.beforeEach(async ({ page }) => {
     await page.waitForTimeout(10000);
 });
 
-test("Verify the Paitent Dashobard Label ,Ststus Button are visible", async ({ page }) => {
+test("Verify the Paitent Dashobard Label ,Status Button are visible", async ({ page }) => {
 
     await expect(await patientdashboard.GetPatientName()).toBeVisible();
     await expect(await patientdashboard.GetRecentActivitySummary()).toBeVisible();
