@@ -1,5 +1,5 @@
 export class TestConfig {
-  appUrl = "https://sniffleshealth.devtrust.biz/login";
+  appUrl = "";
   patientemail = "test@59gmail.com";
   password = "Test@1234";
 

@@ -1,22 +1,24 @@
 # HealthCare  Playwright Automation Framework
 
-End-to-end UI automation framework for the HealthCare web application using Playwright, TypeScript, Page Object Model, Faker-based test data, and Allure reporting.
+End-to-end UI automation framework for the HealthCare web application using Playwright, TypeScript, Page Object Model, Faker-based dynamic test data, and Allure reporting.
 
-This framework currently covers login and patient signup flows for Patient, Doctor, and Admin user journeys.
+The framework covers login, patient signup, patient dashboard, and physician dashboard flows for Patient, Doctor/Physician, and Admin user journeys.
 
 ## Project Overview
 
-This repository is organized as a maintainable Playwright automation framework. Test cases, page objects, configuration, and test data utilities are separated so new scenarios can be added without duplicating selectors or setup logic.
+This repository is structured as a maintainable Playwright automation framework. Test cases, page objects, configuration, and reusable data utilities are separated so new scenarios can be added without duplicating locators or setup logic.
 
 Current automation coverage includes:
 
 - Patient login with configured credentials
-- Doctor login with configured credentials
+- Doctor/Physician login with configured credentials
 - Admin login with configured credentials
 - Login negative validation scenarios
 - Patient signup using dynamic random data
 - Patient signup negative validation scenarios
-- HTML and Allure test reporting
+- Patient dashboard UI validation
+- Physician dashboard UI and count validation
+- HTML, Allure, dot, and list reporting
 - Screenshot, video, and trace capture for failed or retried tests
 
 ## Tech Stack
@@ -26,6 +28,7 @@ Current automation coverage includes:
 - Page Object Model for reusable page actions and locators
 - Faker.js for dynamic test data generation
 - Allure Playwright for advanced reporting
+- CSV and Excel package dependencies available for future data-driven testing
 - Node.js and npm for dependency management
 
 ## Project Structure
@@ -33,28 +36,32 @@ Current automation coverage includes:
 ```text
 HealthCareMedFlowPlaywrightProject/
 |-- config/
-|   |-- TestConfig.ts                # Application URL and test credentials
-|   `-- randomDataGenerator.ts       # Faker-based reusable random data utility
-|-- data/                            # Reserved for external test data files
+|   |-- TestConfig.ts                    # Application URL and test credentials
+|   `-- randomDataGenerator.ts           # Faker-based reusable random data utility
+|-- data/                                # Reserved for external test data files
 |-- pages/
-|   |-- LoginPage.ts                 # Login page object and validation locators
-|   `-- PatientSignupPage.ts         # Patient signup page object
-|-- reports/                         # Reserved for custom reports
+|   |-- LoginPage.ts                     # Login page object and validation locators
+|   |-- PatientDashboard.ts              # Patient dashboard page object
+|   |-- PatientSignupPage.ts             # Patient signup page object
+|   `-- PhysicianDashboardPage.ts        # Physician dashboard page object
+|-- reports/                             # Reserved for custom reports
 |-- tests/
-|   |-- AdminLogin.spec.ts           # Admin login test
-|   |-- DoctorLogin.spec.ts          # Doctor login test
-|   |-- LoginNegativeTesting.spec.ts # Login negative tests
-|   |-- LoginPatient.spec.ts         # Patient login test
-|   |-- PatientSignup.spec.ts        # Patient signup test
-|   `-- PatientSignupNegativeTesting.spec.ts
-|-- utils/                           # Reserved for shared helper utilities
-|-- playwright.config.ts             # Playwright framework configuration
-|-- package.json                     # Project dependencies
-|-- package-lock.json                # Locked dependency versions
-`-- README.md                        # Project documentation
+|   |-- AdminLogin.spec.ts               # Admin login test
+|   |-- DoctorLogin.spec.ts              # Doctor login test
+|   |-- LoginNegativeTesting.spec.ts     # Login negative tests
+|   |-- LoginPatient.spec.ts             # Patient login test
+|   |-- PatientDashBoard.spec.ts         # Patient dashboard UI validation
+|   |-- PatientSignup.spec.ts            # Patient signup test
+|   |-- PatientSignupNegativeTesting.spec.ts
+|   `-- PhysicianDashBoard.spec.ts       # Physician dashboard UI and count validation
+|-- utils/                               # Reserved for shared helper utilities
+|-- playwright.config.ts                 # Playwright framework configuration
+|-- package.json                         # Project dependencies
+|-- package-lock.json                    # Locked dependency versions
+`-- README.md                            # Project documentation
 ```
 
-Generated runtime folders such as `node_modules`, `test-results`, `playwright-report`, `allure-results`, and `allure-report` are ignored by Git and should not be committed.
+Generated runtime folders such as `node_modules`, `test-results`, `playwright-report`, `allure-results`, and `allure-report` should not be committed.
 
 ## Framework Design
 
@@ -64,19 +71,33 @@ The framework keeps UI locators and reusable page actions inside the `pages/` fo
 
 - `LoginPage.ts` manages login email, password, login button, and login validation message locators.
 - `PatientSignupPage.ts` manages create account navigation, patient registration fields, terms checkbox, continue button, and signup validation message locators.
+- `PatientDashboard.ts` manages patient dashboard headings, summary cards, consultation table columns, and quick action buttons.
+- `PhysicianDashboardPage.ts` manages physician dashboard headings, summary cards, numeric dashboard counts, waiting patients, and upcoming appointments sections.
 
 Tests use these page classes instead of keeping selectors directly inside every spec file. This makes selector maintenance easier when the application UI changes.
 
 ### Central Configuration
 
-`config/TestConfig.ts` stores the application URL and current test credentials used by login tests.
+`config/TestConfig.ts` stores the application URL and current test credentials used by login and dashboard tests.
 
 Current credential categories:
 
 - Patient user
-- Doctor user
+- Doctor/Physician user
 - Admin user
 
+Example fields used by the framework:
+
+```ts
+appUrl = "";
+patientemail = "";
+password = "";
+doctoremail = "";
+adminemail = "";
+adminpassword = "";
+```
+
+Keep the class and field names as they are unless the test files are updated to match.
 
 ### Dynamic Test Data
 
@@ -88,7 +109,7 @@ Available data helpers include:
 - Email address
 - Phone number
 - Username
-- Password
+- Password values with generated complexity support
 - Country, state, city, address, and PIN/ZIP
 - UUID
 - Random numeric and alphanumeric values
@@ -110,7 +131,11 @@ Failure diagnostics are configured as:
 
 ### Browser Configuration
 
-The current active Playwright project runs on Chromium using the Desktop Chrome device profile.
+The current Playwright configuration defines projects for:
+
+- Chromium using Desktop Chrome
+- Firefox using Desktop Firefox
+- WebKit using Desktop Safari
 
 Current settings:
 
@@ -118,11 +143,10 @@ Current settings:
 - Timeout: `30 seconds`
 - Retries: `1`
 - Workers: `1`
+- Fully parallel execution: disabled
 - Viewport: `1280 x 720`
 - HTTPS errors: ignored
 - Permission enabled: `geolocation`
-
-Firefox and WebKit project configuration is present in `playwright.config.ts` but currently commented out.
 
 ## Prerequisites
 
@@ -157,18 +181,7 @@ npx playwright install
 
 Before running tests, update `config/TestConfig.ts` with the correct application URL and valid test credentials.
 
-Example fields used by the framework:
-
-```ts
-appUrl = "";
-patientemail = "";
-password = "";
-doctoremail = "";
-adminemail = "";
-adminpassword = "";
-```
-
-Keep the class and field names as they are unless the test files are updated to match.
+The current framework reads credentials directly from `TestConfig.ts`. For team or CI usage, move sensitive credentials to environment variables or a secure secrets manager.
 
 ## Running Tests
 
@@ -196,10 +209,12 @@ Run tests with Playwright UI mode:
 npx playwright test --ui
 ```
 
-Run tests on the configured Chromium project:
+Run tests on a specific browser project:
 
 ```bash
 npx playwright test --project=chromium
+npx playwright test --project=firefox
+npx playwright test --project=webkit
 ```
 
 ## Reports
@@ -224,32 +239,33 @@ If Allure CLI is not installed globally, install it or run it through your prefe
 | Test File | Purpose |
 | --- | --- |
 | `AdminLogin.spec.ts` | Verifies admin login using configured admin credentials |
-| `DoctorLogin.spec.ts` | Verifies doctor login using configured doctor credentials |
+| `DoctorLogin.spec.ts` | Verifies doctor/physician login using configured doctor credentials |
 | `LoginPatient.spec.ts` | Verifies patient login using configured patient credentials |
 | `LoginNegativeTesting.spec.ts` | Verifies disabled login button states and invalid credential validation messages |
 | `PatientSignup.spec.ts` | Verifies patient signup using random generated user data |
 | `PatientSignupNegativeTesting.spec.ts` | Verifies signup validation scenarios such as missing data, missing names, missing email, and password mismatch |
+| `PatientDashBoard.spec.ts` | Verifies patient dashboard labels, cards, consultation table columns, and quick action buttons |
+| `PhysicianDashBoard.spec.ts` | Verifies physician dashboard labels, cards, numeric counts, waiting patients, and upcoming appointments sections |
 
 ## Best Practices Followed
 
 - Test cases are separated from page object classes.
 - Common test configuration is maintained in a dedicated config file.
 - Random data generation is centralized and reusable.
-- Runtime reports and test artifacts are excluded from Git.
+- Runtime reports and test artifacts are kept separate from source files.
 - Browser diagnostics are enabled for easier failure analysis.
-- Test execution is serialized with one worker for stability.
+- Test execution uses one worker for stability.
+- Dashboard validations assert both visibility and expected numeric count formats where applicable.
 
 ## Recommended Future Enhancements
-
-The existing framework can be improved further as the project grows:
 
 - Move sensitive credentials from `TestConfig.ts` to environment variables or a secure secrets manager.
 - Add npm scripts in `package.json` for common commands such as `test`, `test:headed`, `report`, and `allure`.
 - Add `.env` support for environment-specific URLs and credentials.
-- Enable Firefox and WebKit projects when cross-browser execution is required.
 - Add reusable fixtures for login sessions, authenticated contexts, and role-based setup.
-- Add test data files under `data/` for JSON, CSV, or Excel-driven tests.
-- Add test tagging such as `@smoke`, `@regression`, `@login`, and `@signup`.
+- Replace fixed waits with state-based waits where possible.
+- Add data-driven tests using JSON, CSV, or Excel files under `data/`.
+- Add test tagging such as `@smoke`, `@regression`, `@login`, `@signup`, and `@dashboard`.
 - Add stronger post-login assertions such as dashboard URL, role-specific heading, or profile details.
 - Add CI/CD execution through GitHub Actions, Azure DevOps, Jenkins, or another pipeline tool.
 - Add linting and formatting using ESLint and Prettier.
@@ -259,8 +275,9 @@ The existing framework can be improved further as the project grows:
 - Do not commit generated folders such as reports, traces, videos, screenshots, and `node_modules`.
 - Keep selectors inside page object files when adding new scenarios.
 - Keep reusable data generation inside `config/randomDataGenerator.ts` or a shared utility.
-- Before pushing to a public repository, remove sensitive credentials from source code and clean Git history if required.
+- Keep credentials private before pushing to any shared or public repository.
+- Update this README whenever new page objects, test files, browser projects, or reporting tools are added.
 
 ## Author
 
-HealthCare  Playwright Automation Project
+HealthCare Playwright Automation Project
